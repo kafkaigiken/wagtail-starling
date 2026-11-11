@@ -1,4 +1,4 @@
-{# The Turnstile script, for any page whose form carries a TurnstileField
-   (wagtail_starling.captcha.turnstile). Include it only when the form says
-   so: {% if form.has_turnstile %}{% include "wagtail_starling/captcha/turnstile_script.html" %}{% endif %} #}
+{# The Turnstile script partial. Include it on pages whose form carries a
+   TurnstileField, guarded by the builder's has_turnstile flag - see the
+   wagtail_starling README for the include snippet. #}
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

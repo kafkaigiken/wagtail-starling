@@ -1,0 +1,4 @@
+{# The Turnstile script, for any page whose form carries a TurnstileField
+   (wagtail_starling.captcha.turnstile). Include it only when the form says
+   so: {% if form.has_turnstile %}{% include "wagtail_starling/captcha/turnstile_script.html" %}{% endif %} #}
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>

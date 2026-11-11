@@ -5,7 +5,21 @@ description = "Reusable Wagtail components for multilingual content management"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "wagtail>=6.4.1",
+    # The real floor: starling's migrations depend on
+    # wagtailcore.0095_groupsitepermission, which shipped in Wagtail 7.0
+    # (the old >=6.4.1 claim was never testable — the suite wouldn't boot).
+    # Cap at <8 like the current consumers (medan <8, male <7.2) until an
+    # adopter proves 8.x green.
+    "wagtail>=7.0,<8",
+]
+
+[project.optional-dependencies]
+# Bot-gate field types (wagtail_starling.captcha). A Turnstile-only
+# consumer needs none of these — django_recaptcha imports are deferred to
+# the create_recaptcha_* builder methods.
+captcha = [
+    "django-recaptcha==4.1",
+    "httpx>=0.27",
 ]
 
 [dependency-groups]
@@ -13,6 +27,8 @@ dev = [
     "pytest>=7.4.0",
     "pytest-django>=4.5.0",
     "pytest-cov>=4.1.0",
+    "django-recaptcha==4.1",
+    "httpx>=0.27",
 ]
 
 [build-system]

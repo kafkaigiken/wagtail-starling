@@ -10,11 +10,12 @@ A Wagtail CMS extension providing reusable components for multilingual content m
 - **Category System**: Translatable category snippets with automatic routing and URL handling
 - **Category Routing**: Built-in support for category-based article URLs with pagination
 - **Analytics Settings**: Flexible analytics integration (Google Analytics, Matomo, etc.) with page-level control
+- **Captcha Form Fields**: Bot-gate field types (Cloudflare Turnstile, reCAPTCHA v2/v3) for the Wagtail form builder — one canonical implementation extracted from the consumer projects
 
 ## Requirements
 
 - Python >= 3.10
-- Wagtail >= 6.4.1
+- Wagtail >= 7.0
 
 ## Installation
 
@@ -50,6 +51,85 @@ TEMPLATES = [
     },
 ]
 ```
+
+## Captcha form fields (`wagtail_starling.captcha`)
+
+One canonical implementation of the form-builder bot-gate field types,
+extracted from medan PR #601 and male's FormPage work after both projects
+had shipped drifted copies (different settings names, different backends,
+different dev rules).
+
+### Install
+
+```bash
+pip install wagtail-starling[captcha]   # Turnstile-only consumers may omit the extra
+```
+
+```python
+INSTALLED_APPS = [
+    # ... other apps
+    "wagtail_starling",           # core
+    "wagtail_starling.captcha",   # captcha field types (inert until listed)
+    "django_recaptcha",           # only when using reCAPTCHA v2/v3 types
+]
+```
+
+### Settings
+
+| Setting | Use |
+|---|---|
+| `TURNSTILE_SITE_KEY` / `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile widget + server-side verify |
+| `RECAPTCHA_PUBLIC_KEY` / `RECAPTCHA_PRIVATE_KEY` / `RECAPTCHA_REQUIRED_SCORE` | reCAPTCHA v2/v3 field types |
+
+### Behavior contract
+
+- **Closed never open**: an unreachable verification endpoint fails the form.
+- **Real secret ⇒ gate mandatory**: missing/rejected token fails the form.
+- **Cloudflare test secret (dev defaults) ⇒ token optional**: local form
+  testing needs no challenge.
+- **No kill switch**: nothing disables both the widget and validation.
+- The admin row's `required` checkbox is ignored for captcha fields.
+- `django_recaptcha` is imported lazily — a Turnstile-only consumer installs
+  no extra and carries no reCAPTCHA dependency.
+
+### Host composition
+
+```python
+from wagtail.contrib.forms.models import AbstractEmailForm, AbstractFormField
+from wagtail_starling.captcha.builder import CaptchaFormBuilder
+from wagtail_starling.captcha.models import CaptchaFormFieldMixin
+
+
+class FormField(CaptchaFormFieldMixin, AbstractFormField):
+    page = ParentalKey("FormPage", on_delete=models.CASCADE, related_name="form_fields")
+
+
+class FormPage(AbstractEmailForm):   # host-owned model and migrations
+    form_builder = CaptchaFormBuilder
+```
+
+Load the Turnstile script only on forms that use it — the builder sets a
+flag on the form class:
+
+```html
+{{ form.media.js }}
+{% if form.has_turnstile %}{% include "wagtail_starling/captcha/turnstile_script.html" %}{% endif %}
+```
+
+The reCAPTCHA v3 score-threshold admin toggle ships as packaged app static
+and installs itself via the `insert_global_admin_js` hook when the app is
+registered. ja translations ship in the app's `locale/`.
+
+### Adopting consumers (extraction follow-ups)
+
+- **medan** (PR #601): subtree-vendor starling into `sub-src/`, re-point
+  `medan.turnstile` imports (public forms + fixture), drop the local
+  builder/choices/JS copies. Settings names already match.
+- **male**: subtree update (`make update-wagtail-starling`), re-point
+  `male/forms.py` to starling's field, rename settings
+  (`TURNSTILE_SITEKEY`→`TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET`→`TURNSTILE_SECRET_KEY`)
+  and drop the `TURNSTILE_ENABLE` kill switch (no longer exists — see the
+  contract), retire the `django-turnstile` dependency.
 
 ## Usage
 

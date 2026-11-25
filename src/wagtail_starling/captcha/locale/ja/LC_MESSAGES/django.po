@@ -1,0 +1,41 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wagtail-starling-captcha\n"
+"Report-Msgid-Bugs-To: \n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Please complete the verification challenge."
+msgstr "認証チェックを完了してください。"
+
+msgid "The verification could not be checked. Please try again."
+msgstr "認証を確認できませんでした。もう一度お試しください。"
+
+msgid "Invalid data, please try again."
+msgstr "データが正しくありません。もう一度お試しください。"
+
+msgid "reCAPTCHA v2 (Checkbox)"
+msgstr "reCAPTCHA v2（チェックボックス）"
+
+msgid "reCAPTCHA v3 (Invisible)"
+msgstr "reCAPTCHA v3（非表示）"
+
+msgid "Cloudflare Turnstile (Invisible)"
+msgstr "Cloudflare Turnstile（非表示）"
+
+msgid "reCAPTCHA v3 Score Threshold"
+msgstr "reCAPTCHA v3 スコアしきい値"
+
+msgid ""
+"Score threshold for reCAPTCHA v3 (0.0 to 1.0). Only applies to reCAPTCHA v3 "
+"fields. Default: 0.5"
+msgstr "reCAPTCHA v3 のスコアしきい値（0.0 〜 1.0）。reCAPTCHA v3 フィールドのみに適用されます。デフォルト: 0.5"
+
+msgid ""
+"Label displayed above the field. For captcha fields "
+"(reCAPTCHA / Turnstile), this won't be shown to users - "
+"you can use any placeholder text like 'captcha'."
+msgstr "フィールドの上に表示されるラベル。captcha フィールド（reCAPTCHA / Turnstile）ではユーザーには表示されません。「captcha」などのプレースホルダーを自由に入力できます。"
